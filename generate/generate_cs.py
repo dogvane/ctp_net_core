@@ -52,6 +52,12 @@ class Generate:
             cbArgs = cbArgs.replace(')', '')
         self.cbArgs_dict[cbName] = cbArgs
 
+    def fixParamString(self, paramString):
+        retstr = paramString[0].lower() + paramString[1:]
+        retstr = retstr.replace('ID', 'Id')
+        print(paramString, retstr)
+        return retstr
+
     def processFunction(self, line):
 
         # line = line.replace('\tvirtual int ', '')  # 删除行首的无效内容
@@ -84,99 +90,41 @@ class Generate:
                 struct_dict[key] = o._fields_
 
         self.f_py.write(
-            """
-
-using System;
+            """using System;
 using System.IO;
-using System.Runtime.InteropServices;
+using PureCode.CtpCSharp;
 
 namespace HaiFeng
 {{
-	public class ctp_{0}
+	public class Ctp{0}
 	{{
-		#region Dll Load /UnLoad
-		/// <summary>
-		/// 原型是 :HMODULE LoadLibrary(LPCTSTR lpFileName);
-		/// </summary>
-		/// <param name="lpFileName"> DLL 文件名 </param>
-		/// <returns> 函数库模块的句柄 </returns>
-		[DllImport("kernel32.dll")]
-		private static extern IntPtr LoadLibrary(string lpFileName);
+		private readonly AssembyLoader loader;
+	    private readonly IntPtr _api;
+		private readonly IntPtr _spi;
+	    private delegate IntPtr Create();
+	    private delegate IntPtr DelegateRegisterSpi(IntPtr api, IntPtr pSpi);
 
-		/// <summary>
-		/// 原型是 : FARPROC GetProcAddress(HMODULE hModule, LPCWSTR lpProcName);
-		/// </summary>
-		/// <param name="hModule"> 包含需调用函数的函数库模块的句柄 </param>
-		/// <param name="lpProcName"> 调用函数的名称 </param>
-		/// <returns> 函数指针 </returns>
-		[DllImport("kernel32.dll")]
-		private static extern IntPtr GetProcAddress(IntPtr hModule, string lpProcName);
-
-		/// <summary>
-		/// 原型是 : BOOL FreeLibrary(HMODULE hModule);
-		/// </summary>
-		/// <param name="hModule"> 需释放的函数库模块的句柄 </param>
-		/// <returns> 是否已释放指定的 Dll </returns>
-		[DllImport("kernel32", EntryPoint = "FreeLibrary", SetLastError = true)]
-		private static extern bool FreeLibrary(IntPtr hModule);
-
-		/// <summary>
-		///
-		/// </summary>
-		/// <param name="pHModule"></param>
-		/// <param name="lpProcName"></param>
-		/// <param name="t"></param>
-		/// <returns></returns>
-		/// <exception cref="Exception"></exception>
-		private static Delegate Invoke(IntPtr pHModule, string lpProcName, Type t)
+		public Ctp{0}(string pAbsoluteFilePath)
 		{{
-			// 若函数库模块的句柄为空，则抛出异常
-			if (pHModule == IntPtr.Zero)
-			{{
-				throw (new Exception(" 函数库模块的句柄为空 , 请确保已进行 LoadDll 操作 !"));
-			}}
-			// 取得函数指针
-			IntPtr farProc = GetProcAddress(pHModule, lpProcName);
-			// 若函数指针，则抛出异常
-			if (farProc == IntPtr.Zero)
-			{{
-				throw (new Exception(" 没有找到 :" + lpProcName + " 这个函数的入口点 "));
-			}}
-			return Marshal.GetDelegateForFunctionPointer(farProc, t);
-		}}
-		#endregion
+		    loader = new AssembyLoader(pAbsoluteFilePath);
+		    Directory.CreateDirectory("log");
 
-		IntPtr _handle = IntPtr.Zero, _api = IntPtr.Zero, _spi = IntPtr.Zero;
-		delegate IntPtr Create();
-		delegate IntPtr DeleRegisterSpi(IntPtr api, IntPtr pSpi);
-		public ctp_{0}(string pAbsoluteFilePath)
-		{{
-			string curPath = Environment.CurrentDirectory;
-			Environment.CurrentDirectory = new FileInfo(pAbsoluteFilePath).DirectoryName;
-			_handle = LoadLibrary(pAbsoluteFilePath);
-			if (_handle == IntPtr.Zero)
-			{{
-				throw (new Exception(String.Format("没有找到:", pAbsoluteFilePath)));
-			}}
-			Environment.CurrentDirectory = curPath;
-			Directory.CreateDirectory("log");
-
-			_api = (Invoke(_handle, "CreateApi", typeof(Create)) as Create)();
-			_spi = (Invoke(_handle, "CreateSpi", typeof(Create)) as Create)();
-			(Invoke(_handle, "RegisterSpi", typeof(DeleRegisterSpi)) as DeleRegisterSpi)(_api, _spi);
+		    _api = ((Create) loader.Invoke("CreateApi", typeof(Create)))();
+		    _spi = ((Create) loader.Invoke("CreateSpi", typeof(Create)))();
+		    (loader.Invoke("RegisterSpi", typeof(DelegateRegisterSpi)) as DelegateRegisterSpi)?.Invoke(_api, _spi);
 		}}
-""".format(self.ClassName.lower()))
+""".format(self.ClassName))
         deles = ''
         funcs = []
     # 	funcs.append("""
     # public IntPtr {0}()
     # {{
-    # 	return (Invoke(_handle, "{0}", typeof(Create)) as Create)();
+    # 	return ((Create) loader.Invoke("{0}", typeof(Create)))();
     # }}\n""".format("CreateApi",""))
     # 	funcs.append("""
     # public IntPtr {0}()
     # {{
-    # 	return (Invoke(_handle, "{0}", typeof(Create)) as Create)();
+    # 	return ((Create) loader.Invoke("{0}", typeof(Create)))();
     # }}\n""".format("CreateSpi",""))
 
         type_dict = {'CThostFtdcTraderSpi': 'IntPtr', 'CThostFtdcMdSpi': 'IntPtr', 'c_int32': 'int', 'char*': 'string', 'c_double': 'double', 'c_short': 'short', 'string': 'string', 'c_bool': 'bool', 'c_long': 'int'}
@@ -207,7 +155,7 @@ namespace HaiFeng
                 func = '''
 		public IntPtr {0}(IntPtr pInstruments, int pCount)
 		{{
-			return (Invoke(_handle, "{0}", typeof(Dele{0})) as Dele{0})(_api, pInstruments, pCount);
+			return ((Dele{0}) loader.Invoke("{0}", typeof(Dele{0})))(_api, pInstruments, pCount);
 		}}\n'''.format(fcName)
             else:
                 # 类型声明时的argtypes用
@@ -227,7 +175,7 @@ namespace HaiFeng
                         if type == 'char':
                             values += ', ' + "bytes({0}, encoding='ascii')".format(args)
                         else:
-                            values += ', ' + args
+                            values += ', ' + self.fixParamString(args)
                         if args != 'nRequestID':  # 调用参数中不包含
                             params += ', {0} {1}'.format(type_dict[type], args)
                     else:  # 非基础类型的参数
@@ -239,8 +187,8 @@ namespace HaiFeng
                                 # 合成structure bytes('9999', encoding='ascii')
                                 if tt.find('c_char') >= 0:
                                     if tt.find('Array') > 0:
-                                        params += ', string {0} = ""'.format(field[0])
-                                        struct_init += "\n\t\t\t\t{0} = {0},".format(field[0])
+                                        params += ', string {0} = ""'.format(self.fixParamString(field[0]))
+                                        struct_init += "\n\t\t\t\t{0} = {1},".format(field[0], self.fixParamString(field[0]))
                                     else:  # 处理enum类型
                                         # 找到field对应的类型
                                         idx = fstruct.index('class {0}(Structure):\n'.format(type))
@@ -256,23 +204,23 @@ namespace HaiFeng
                                             if fenum_cs[i].find('THOST_FTDC_') >= 0:
                                                 first = fenum_cs[i].split('=')[0].replace('\t', '').strip()
                                                 break
-                                        params += ", TThostFtdc{0} {1} = TThostFtdc{0}.{2}".format(enum_type, field[0], first)
-                                        struct_init += "\n\t\t\t\t{0} = {0},".format(field[0])
+                                        params += ", TThostFtdc{0} {1} = TThostFtdc{0}.{2}".format(enum_type, self.fixParamString(field[0]), first)
+                                        struct_init += "\n\t\t\t\t{0} = {1},".format(field[0], self.fixParamString(field[0]))
                                 else:
-                                    params += ', {1} {0} = 0'.format(field[0], type_dict[tt])
-                                    struct_init += "\t\t\t\t{0} = {0},\n".format(field[0])
+                                    params += ', {1} {0} = 0'.format(self.fixParamString(field[0]), type_dict[tt])
+                                    struct_init += "\n\t\t\t\t{0} = {1},".format(field[0], self.fixParamString(field[0]))
                             struct_init += '\n\t\t\t};'
                             # 构造struct的语句
                             struct_init_dict[fcName] = struct_init
                             values += '{0}'.format('struc')
                         else:
-                            values += ', {0}'.format(args)
+                            values += ', {0}'.format(self.fixParamString(args))
                             if args != 'nRequestID':  # 调用参数中不包含
-                                params += ', {0} {1}'.format(type, args)
-                        types += ', {0} {1}'.format(type, args)
+                                params += ', {0} {1}'.format(type, self.fixParamString(args))
+                        types += ', {0} {1}'.format(type, self.fixParamString(args))
 
                 # 声明主调函数类型 public delegate IntPtr SubscribePublicTopic (IntPtr ptr, IntPtr nResumeType);
-                line = '''\t\tpublic delegate IntPtr Dele{0}(IntPtr api{1});\n'''.format(fcName, types)
+                line = '''\t\tpublic delegate IntPtr Delegate{0}(IntPtr api{1});\n'''.format(fcName, types)
                 deles += line
 
                 # 去掉首','
@@ -283,13 +231,13 @@ namespace HaiFeng
                     func = '''
 		public IntPtr {0}({1})
 		{{{3}
-			return (Invoke(_handle, "{0}", typeof(Dele{0})) as Dele{0})(_api, {2});
-		}}\n'''.format(fcName, params.replace(', nRequestID', ''), values.replace(', nRequestID', ', this.nRequestID++'), struct_init_dict[fcName])
+			return ((Delegate{0})loader.Invoke("{0}", typeof(Delegate{0})))(_api, {2});
+		}}\n'''.format(fcName, params.replace(', nRequestId', ''), values.replace(', nRequestId', ', nRequestId++'), struct_init_dict[fcName])
                 else:
                     func = '''
 		public IntPtr {0}({1})
 		{{
-			return (Invoke(_handle, "{0}", typeof(Dele{0})) as Dele{0})(_api{2});
+			return ((Delegate{0})loader.Invoke("{0}", typeof(Delegate{0})))(_api{2});
 		}}\n'''.format(fcName, params, values)
 
             funcs.append(func)
@@ -317,14 +265,14 @@ namespace HaiFeng
             param_trans = ''
 
             for t in cbArgsTypeList:
-                paramtype += ', {0} {1}'.format(('ref {0}'.format(t) if 'CThostFtdc' in t else t), cbArgsValueList[cbArgsTypeList.index(t)])
+                paramtype += ', {0} {1}'.format(('ref {0}'.format(t) if 'CThostFtdc' in t else t), self.fixParamString(cbArgsValueList[cbArgsTypeList.index(t)]))
                 # 在响应参数中加入参数的类型,方便之后的调用(可查类型)
                 param = cbArgsValueList[cbArgsTypeList.index(t)]
-                params__ += ', ' + param
+                params__ += ', ' + self.fixParamString(param)
                 # if params == '':
                 #     params += '{0} = {1}'.format(param, t)
                 # else:
-                params += ', {0} = {1}'.format(param, t)
+                params += ', {0} = {1}'.format(param, self.fixParamString(t))
 # def __OnRspSubMarketData(self, pSpecificInstrument, pRspInfo, nRequestID, bIsLast):
 # self.OnRspSubMarketData(POINTER(CThostFtdcSpecificInstrumentField).from_param(pSpecificInstrument).contents, POINTER(CThostFtdcRspInfoField).from_param(pRspInfo).contents, nRequestID, bIsLast)
                 ref = param
@@ -333,8 +281,8 @@ namespace HaiFeng
                 param_trans += ref if param_trans == '' else (', ' + ref)
 
             line = """
-		public delegate void Dele{0}({1});
-		public void Set{0}(Dele{0} func) {{ (Invoke(_handle, "Set{0}", typeof(DeleSet)) as DeleSet)(_spi, func); }}""".format(cbName, paramtype[2:])
+		public delegate void Delegate{0}({1});
+		public void Set{0}(Delegate{0} func) {{ ((DelegateSet)loader.Invoke("Set{0}", typeof(DelegateSet)))(_spi, func); }}""".format(cbName, paramtype[2:])
             cbRegs.append(line)
 
             cb__Funcs.append("""
@@ -354,21 +302,21 @@ namespace HaiFeng
         # 以上为__init__函数内容
 
         self.f_py.write("""
-		#region 声明REQ函数类型\n""")
+		#region 声明REQ函数类型\n\n""")
         self.f_py.write(deles)
         self.f_py.write("""
-		#endregion""")
+		#endregion\n\n""")
 
         self.f_py.write("""
 		#region REQ函数\n
-		private int nRequestID = 0;\n""")
+		private int nRequestId;\n""")
         for func in funcs:
             self.f_py.write(func)
         self.f_py.write("""
-		#endregion""")
+		#endregion\n""")
 
         self.f_py.write('''
-		delegate void DeleSet(IntPtr spi, Delegate func);
+		delegate void DelegateSet(IntPtr spi, Delegate func);
 ''')
         for reg in cbRegs:
             self.f_py.write(reg)
