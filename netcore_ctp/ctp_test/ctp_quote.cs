@@ -1,165 +1,168 @@
-
-
 using System;
 using System.IO;
-using System.Runtime.InteropServices;
 using PureCode.CtpCSharp;
 
 namespace HaiFeng
 {
-	public class ctp_quote
+	public class CtpQuote
 	{
-	    private AssembyLoader loader;
-	    IntPtr _handle = IntPtr.Zero, _api = IntPtr.Zero, _spi = IntPtr.Zero;
-	    delegate IntPtr Create();
-	    delegate IntPtr DelegateRegisterSpi(IntPtr api, IntPtr pSpi);
-	    public ctp_quote(string pFile)
-	    {
-	        loader = new AssembyLoader(pFile);
-	        Directory.CreateDirectory("log");
+		private readonly AssembyLoader loader;
+	    private readonly IntPtr _api;
+		private readonly IntPtr _spi;
+	    private delegate IntPtr Create();
+	    private delegate IntPtr DelegateRegisterSpi(IntPtr api, IntPtr pSpi);
 
-	        _api = (loader.Invoke("CreateApi", typeof(Create)) as Create)();
-	        _spi = (loader.Invoke("CreateSpi", typeof(Create)) as Create)();
-	        (loader.Invoke("RegisterSpi", typeof(DelegateRegisterSpi)) as DelegateRegisterSpi)(_api, _spi);
-	    }
+		public CtpQuote(string pAbsoluteFilePath)
+		{
+		    loader = new AssembyLoader(pAbsoluteFilePath);
+		    Directory.CreateDirectory("log");
+
+		    _api = ((Create) loader.Invoke("CreateApi", typeof(Create)))();
+		    _spi = ((Create) loader.Invoke("CreateSpi", typeof(Create)))();
+		    (loader.Invoke("RegisterSpi", typeof(DelegateRegisterSpi)) as DelegateRegisterSpi)?.Invoke(_api, _spi);
+		}
 
 
-        #region 声明REQ函数类型
-        public delegate IntPtr DeleRelease(IntPtr api);
-		public delegate IntPtr DeleInit(IntPtr api);
-		public delegate IntPtr DeleJoin(IntPtr api);
-		public delegate IntPtr DeleGetTradingDay(IntPtr api);
-		public delegate IntPtr DeleRegisterFront(IntPtr api, string pszFrontAddress);
-		public delegate IntPtr DeleRegisterNameServer(IntPtr api, string pszNsAddress);
-		public delegate IntPtr DeleRegisterFensUserInfo(IntPtr api, CThostFtdcFensUserInfoField pFensUserInfo);
+		#region 声明REQ函数类型
+
+		public delegate IntPtr DelegateRelease(IntPtr api);
+		public delegate IntPtr DelegateInit(IntPtr api);
+		public delegate IntPtr DelegateJoin(IntPtr api);
+		public delegate IntPtr DelegateGetTradingDay(IntPtr api);
+		public delegate IntPtr DelegateRegisterFront(IntPtr api, string pszFrontAddress);
+		public delegate IntPtr DelegateRegisterNameServer(IntPtr api, string pszNsAddress);
+		public delegate IntPtr DelegateRegisterFensUserInfo(IntPtr api, CThostFtdcFensUserInfoField pFensUserInfo);
 		public delegate IntPtr DeleSubscribeMarketData(IntPtr api, IntPtr pInstruments, int pCount);
 		public delegate IntPtr DeleUnSubscribeMarketData(IntPtr api, IntPtr pInstruments, int pCount);
 		public delegate IntPtr DeleSubscribeForQuoteRsp(IntPtr api, IntPtr pInstruments, int pCount);
 		public delegate IntPtr DeleUnSubscribeForQuoteRsp(IntPtr api, IntPtr pInstruments, int pCount);
-		public delegate IntPtr DeleReqUserLogin(IntPtr api, CThostFtdcReqUserLoginField pReqUserLoginField, int nRequestID);
-		public delegate IntPtr DeleReqUserLogout(IntPtr api, CThostFtdcUserLogoutField pUserLogout, int nRequestID);
+		public delegate IntPtr DelegateReqUserLogin(IntPtr api, CThostFtdcReqUserLoginField pReqUserLoginField, int nRequestId);
+		public delegate IntPtr DelegateReqUserLogout(IntPtr api, CThostFtdcUserLogoutField pUserLogout, int nRequestId);
 
 		#endregion
+
+
 		#region REQ函数
 
-		private int nRequestID = 0;
+		private int nRequestId;
 
 		public IntPtr Release()
 		{
-			return (loader.Invoke("Release", typeof(DeleRelease)) as DeleRelease)(_api);
+			return ((DelegateRelease)loader.Invoke("Release", typeof(DelegateRelease)))(_api);
 		}
 
 		public IntPtr Init()
 		{
-			return (loader.Invoke("Init", typeof(DeleInit)) as DeleInit)(_api);
+			return ((DelegateInit)loader.Invoke("Init", typeof(DelegateInit)))(_api);
 		}
 
 		public IntPtr Join()
 		{
-			return (loader.Invoke("Join", typeof(DeleJoin)) as DeleJoin)(_api);
+			return ((DelegateJoin)loader.Invoke("Join", typeof(DelegateJoin)))(_api);
 		}
 
 		public IntPtr GetTradingDay()
 		{
-			return (loader.Invoke("GetTradingDay", typeof(DeleGetTradingDay)) as DeleGetTradingDay)(_api);
+			return ((DelegateGetTradingDay)loader.Invoke("GetTradingDay", typeof(DelegateGetTradingDay)))(_api);
 		}
 
 		public IntPtr RegisterFront(string pszFrontAddress)
 		{
-			return (loader.Invoke("RegisterFront", typeof(DeleRegisterFront)) as DeleRegisterFront)(_api, pszFrontAddress);
+			return ((DelegateRegisterFront)loader.Invoke("RegisterFront", typeof(DelegateRegisterFront)))(_api, pszFrontAddress);
 		}
 
 		public IntPtr RegisterNameServer(string pszNsAddress)
 		{
-			return (loader.Invoke("RegisterNameServer", typeof(DeleRegisterNameServer)) as DeleRegisterNameServer)(_api, pszNsAddress);
+			return ((DelegateRegisterNameServer)loader.Invoke("RegisterNameServer", typeof(DelegateRegisterNameServer)))(_api, pszNsAddress);
 		}
 
-		public IntPtr RegisterFensUserInfo(string BrokerID = "", string UserID = "", TThostFtdcLoginModeType LoginMode = TThostFtdcLoginModeType.THOST_FTDC_LM_Trade)
+		public IntPtr RegisterFensUserInfo(string brokerId = "", string userId = "", TThostFtdcLoginModeType loginMode = TThostFtdcLoginModeType.THOST_FTDC_LM_Trade)
 		{
 			CThostFtdcFensUserInfoField struc = new CThostFtdcFensUserInfoField
 			{
-				BrokerID = BrokerID,
-				UserID = UserID,
-				LoginMode = LoginMode,
+				BrokerID = brokerId,
+				UserID = userId,
+				LoginMode = loginMode,
 			};
-			return (loader.Invoke("RegisterFensUserInfo", typeof(DeleRegisterFensUserInfo)) as DeleRegisterFensUserInfo)(_api, struc);
+			return ((DelegateRegisterFensUserInfo)loader.Invoke("RegisterFensUserInfo", typeof(DelegateRegisterFensUserInfo)))(_api, struc);
 		}
 
 		public IntPtr SubscribeMarketData(IntPtr pInstruments, int pCount)
 		{
-			return (loader.Invoke("SubscribeMarketData", typeof(DeleSubscribeMarketData)) as DeleSubscribeMarketData)(_api, pInstruments, pCount);
+			return ((DeleSubscribeMarketData) loader.Invoke("SubscribeMarketData", typeof(DeleSubscribeMarketData)))(_api, pInstruments, pCount);
 		}
 
 		public IntPtr UnSubscribeMarketData(IntPtr pInstruments, int pCount)
 		{
-			return (loader.Invoke("UnSubscribeMarketData", typeof(DeleUnSubscribeMarketData)) as DeleUnSubscribeMarketData)(_api, pInstruments, pCount);
+			return ((DeleUnSubscribeMarketData) loader.Invoke("UnSubscribeMarketData", typeof(DeleUnSubscribeMarketData)))(_api, pInstruments, pCount);
 		}
 
 		public IntPtr SubscribeForQuoteRsp(IntPtr pInstruments, int pCount)
 		{
-			return (loader.Invoke("SubscribeForQuoteRsp", typeof(DeleSubscribeForQuoteRsp)) as DeleSubscribeForQuoteRsp)(_api, pInstruments, pCount);
+			return ((DeleSubscribeForQuoteRsp) loader.Invoke("SubscribeForQuoteRsp", typeof(DeleSubscribeForQuoteRsp)))(_api, pInstruments, pCount);
 		}
 
 		public IntPtr UnSubscribeForQuoteRsp(IntPtr pInstruments, int pCount)
 		{
-			return (loader.Invoke("UnSubscribeForQuoteRsp", typeof(DeleUnSubscribeForQuoteRsp)) as DeleUnSubscribeForQuoteRsp)(_api, pInstruments, pCount);
+			return ((DeleUnSubscribeForQuoteRsp) loader.Invoke("UnSubscribeForQuoteRsp", typeof(DeleUnSubscribeForQuoteRsp)))(_api, pInstruments, pCount);
 		}
 
-		public IntPtr ReqUserLogin(string TradingDay = "", string BrokerID = "", string UserID = "", string Password = "", string UserProductInfo = "", string InterfaceProductInfo = "", string ProtocolInfo = "", string MacAddress = "", string OneTimePassword = "", string ClientIPAddress = "", string LoginRemark = "")
+		public IntPtr ReqUserLogin(string tradingDay = "", string brokerId = "", string userId = "", string password = "", string userProductInfo = "", string interfaceProductInfo = "", string protocolInfo = "", string macAddress = "", string oneTimePassword = "", string clientIPAddress = "", string loginRemark = "")
 		{
 			CThostFtdcReqUserLoginField struc = new CThostFtdcReqUserLoginField
 			{
-				TradingDay = TradingDay,
-				BrokerID = BrokerID,
-				UserID = UserID,
-				Password = Password,
-				UserProductInfo = UserProductInfo,
-				InterfaceProductInfo = InterfaceProductInfo,
-				ProtocolInfo = ProtocolInfo,
-				MacAddress = MacAddress,
-				OneTimePassword = OneTimePassword,
-				ClientIPAddress = ClientIPAddress,
-				LoginRemark = LoginRemark,
+				TradingDay = tradingDay,
+				BrokerID = brokerId,
+				UserID = userId,
+				Password = password,
+				UserProductInfo = userProductInfo,
+				InterfaceProductInfo = interfaceProductInfo,
+				ProtocolInfo = protocolInfo,
+				MacAddress = macAddress,
+				OneTimePassword = oneTimePassword,
+				ClientIPAddress = clientIPAddress,
+				LoginRemark = loginRemark,
 			};
-			return (loader.Invoke("ReqUserLogin", typeof(DeleReqUserLogin)) as DeleReqUserLogin)(_api, struc, this.nRequestID++);
+			return ((DelegateReqUserLogin)loader.Invoke("ReqUserLogin", typeof(DelegateReqUserLogin)))(_api, struc, nRequestId++);
 		}
 
-		public IntPtr ReqUserLogout(string BrokerID = "", string UserID = "")
+		public IntPtr ReqUserLogout(string brokerId = "", string userId = "")
 		{
 			CThostFtdcUserLogoutField struc = new CThostFtdcUserLogoutField
 			{
-				BrokerID = BrokerID,
-				UserID = UserID,
+				BrokerID = brokerId,
+				UserID = userId,
 			};
-			return (loader.Invoke("ReqUserLogout", typeof(DeleReqUserLogout)) as DeleReqUserLogout)(_api, struc, this.nRequestID++);
+			return ((DelegateReqUserLogout)loader.Invoke("ReqUserLogout", typeof(DelegateReqUserLogout)))(_api, struc, nRequestId++);
 		}
 
 		#endregion
-		delegate void DeleSet(IntPtr spi, Delegate func);
 
-		public delegate void DeleOnFrontConnected();
-		public void SetOnFrontConnected(DeleOnFrontConnected func) { (loader.Invoke("SetOnFrontConnected", typeof(DeleSet)) as DeleSet)(_spi, func); }
-		public delegate void DeleOnFrontDisconnected(int nReason);
-		public void SetOnFrontDisconnected(DeleOnFrontDisconnected func) { (loader.Invoke("SetOnFrontDisconnected", typeof(DeleSet)) as DeleSet)(_spi, func); }
-		public delegate void DeleOnHeartBeatWarning(int nTimeLapse);
-		public void SetOnHeartBeatWarning(DeleOnHeartBeatWarning func) { (loader.Invoke("SetOnHeartBeatWarning", typeof(DeleSet)) as DeleSet)(_spi, func); }
-		public delegate void DeleOnRspUserLogin(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast);
-		public void SetOnRspUserLogin(DeleOnRspUserLogin func) { (loader.Invoke("SetOnRspUserLogin", typeof(DeleSet)) as DeleSet)(_spi, func); }
-		public delegate void DeleOnRspUserLogout(ref CThostFtdcUserLogoutField pUserLogout, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast);
-		public void SetOnRspUserLogout(DeleOnRspUserLogout func) { (loader.Invoke("SetOnRspUserLogout", typeof(DeleSet)) as DeleSet)(_spi, func); }
-		public delegate void DeleOnRspError(ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast);
-		public void SetOnRspError(DeleOnRspError func) { (loader.Invoke("SetOnRspError", typeof(DeleSet)) as DeleSet)(_spi, func); }
-		public delegate void DeleOnRspSubMarketData(ref CThostFtdcSpecificInstrumentField pSpecificInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast);
-		public void SetOnRspSubMarketData(DeleOnRspSubMarketData func) { (loader.Invoke("SetOnRspSubMarketData", typeof(DeleSet)) as DeleSet)(_spi, func); }
-		public delegate void DeleOnRspUnSubMarketData(ref CThostFtdcSpecificInstrumentField pSpecificInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast);
-		public void SetOnRspUnSubMarketData(DeleOnRspUnSubMarketData func) { (loader.Invoke("SetOnRspUnSubMarketData", typeof(DeleSet)) as DeleSet)(_spi, func); }
-		public delegate void DeleOnRspSubForQuoteRsp(ref CThostFtdcSpecificInstrumentField pSpecificInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast);
-		public void SetOnRspSubForQuoteRsp(DeleOnRspSubForQuoteRsp func) { (loader.Invoke("SetOnRspSubForQuoteRsp", typeof(DeleSet)) as DeleSet)(_spi, func); }
-		public delegate void DeleOnRspUnSubForQuoteRsp(ref CThostFtdcSpecificInstrumentField pSpecificInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast);
-		public void SetOnRspUnSubForQuoteRsp(DeleOnRspUnSubForQuoteRsp func) { (loader.Invoke("SetOnRspUnSubForQuoteRsp", typeof(DeleSet)) as DeleSet)(_spi, func); }
-		public delegate void DeleOnRtnDepthMarketData(ref CThostFtdcDepthMarketDataField pDepthMarketData);
-		public void SetOnRtnDepthMarketData(DeleOnRtnDepthMarketData func) { (loader.Invoke("SetOnRtnDepthMarketData", typeof(DeleSet)) as DeleSet)(_spi, func); }
-		public delegate void DeleOnRtnForQuoteRsp(ref CThostFtdcForQuoteRspField pForQuoteRsp);
-		public void SetOnRtnForQuoteRsp(DeleOnRtnForQuoteRsp func) { (loader.Invoke("SetOnRtnForQuoteRsp", typeof(DeleSet)) as DeleSet)(_spi, func); }
+		delegate void DelegateSet(IntPtr spi, Delegate func);
+
+		public delegate void DelegateOnFrontConnected();
+		public void SetOnFrontConnected(DelegateOnFrontConnected func) { ((DelegateSet)loader.Invoke("SetOnFrontConnected", typeof(DelegateSet)))(_spi, func); }
+		public delegate void DelegateOnFrontDisconnected(int nReason);
+		public void SetOnFrontDisconnected(DelegateOnFrontDisconnected func) { ((DelegateSet)loader.Invoke("SetOnFrontDisconnected", typeof(DelegateSet)))(_spi, func); }
+		public delegate void DelegateOnHeartBeatWarning(int nTimeLapse);
+		public void SetOnHeartBeatWarning(DelegateOnHeartBeatWarning func) { ((DelegateSet)loader.Invoke("SetOnHeartBeatWarning", typeof(DelegateSet)))(_spi, func); }
+		public delegate void DelegateOnRspUserLogin(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int nRequestId, bool bIsLast);
+		public void SetOnRspUserLogin(DelegateOnRspUserLogin func) { ((DelegateSet)loader.Invoke("SetOnRspUserLogin", typeof(DelegateSet)))(_spi, func); }
+		public delegate void DelegateOnRspUserLogout(ref CThostFtdcUserLogoutField pUserLogout, ref CThostFtdcRspInfoField pRspInfo, int nRequestId, bool bIsLast);
+		public void SetOnRspUserLogout(DelegateOnRspUserLogout func) { ((DelegateSet)loader.Invoke("SetOnRspUserLogout", typeof(DelegateSet)))(_spi, func); }
+		public delegate void DelegateOnRspError(ref CThostFtdcRspInfoField pRspInfo, int nRequestId, bool bIsLast);
+		public void SetOnRspError(DelegateOnRspError func) { ((DelegateSet)loader.Invoke("SetOnRspError", typeof(DelegateSet)))(_spi, func); }
+		public delegate void DelegateOnRspSubMarketData(ref CThostFtdcSpecificInstrumentField pSpecificInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestId, bool bIsLast);
+		public void SetOnRspSubMarketData(DelegateOnRspSubMarketData func) { ((DelegateSet)loader.Invoke("SetOnRspSubMarketData", typeof(DelegateSet)))(_spi, func); }
+		public delegate void DelegateOnRspUnSubMarketData(ref CThostFtdcSpecificInstrumentField pSpecificInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestId, bool bIsLast);
+		public void SetOnRspUnSubMarketData(DelegateOnRspUnSubMarketData func) { ((DelegateSet)loader.Invoke("SetOnRspUnSubMarketData", typeof(DelegateSet)))(_spi, func); }
+		public delegate void DelegateOnRspSubForQuoteRsp(ref CThostFtdcSpecificInstrumentField pSpecificInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestId, bool bIsLast);
+		public void SetOnRspSubForQuoteRsp(DelegateOnRspSubForQuoteRsp func) { ((DelegateSet)loader.Invoke("SetOnRspSubForQuoteRsp", typeof(DelegateSet)))(_spi, func); }
+		public delegate void DelegateOnRspUnSubForQuoteRsp(ref CThostFtdcSpecificInstrumentField pSpecificInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestId, bool bIsLast);
+		public void SetOnRspUnSubForQuoteRsp(DelegateOnRspUnSubForQuoteRsp func) { ((DelegateSet)loader.Invoke("SetOnRspUnSubForQuoteRsp", typeof(DelegateSet)))(_spi, func); }
+		public delegate void DelegateOnRtnDepthMarketData(ref CThostFtdcDepthMarketDataField pDepthMarketData);
+		public void SetOnRtnDepthMarketData(DelegateOnRtnDepthMarketData func) { ((DelegateSet)loader.Invoke("SetOnRtnDepthMarketData", typeof(DelegateSet)))(_spi, func); }
+		public delegate void DelegateOnRtnForQuoteRsp(ref CThostFtdcForQuoteRspField pForQuoteRsp);
+		public void SetOnRtnForQuoteRsp(DelegateOnRtnForQuoteRsp func) { ((DelegateSet)loader.Invoke("SetOnRtnForQuoteRsp", typeof(DelegateSet)))(_spi, func); }
 	}
 }

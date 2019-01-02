@@ -9,12 +9,12 @@ namespace HaiFeng
 {
     class Program
     {
-        static ctp_quote q = null;
-        static ctp_trade t = null;
+        static CtpQuote q = null;
+        static CtpTrade t = null;
         static void Main(string[] args)
         {
-            q = new ctp_quote("ctp_quote");
-            t = new ctp_trade("ctp_trade");
+            q = new CtpQuote("ctp_quote");
+            t = new CtpTrade("ctp_trade");
 
             t.SetOnFrontConnected(t_connected);
             t.SetOnRspUserLogin(t_login);
@@ -44,7 +44,7 @@ namespace HaiFeng
         private static void t_connected()
         {
             Console.WriteLine("t:connected");
-            t.ReqUserLogin(BrokerID: "9999", UserID: "008107", Password: "1");
+            t.ReqUserLogin(brokerId: "9999", userId: "008107", password: "1");
         }
 
         private static void login(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
@@ -55,7 +55,7 @@ namespace HaiFeng
         private static void connected()
         {
             Console.WriteLine("connected");
-            q.ReqUserLogin(BrokerID: "9999", UserID: "008105", Password: "1");
+            q.ReqUserLogin(brokerId: "9999", userId: "008105", password: "1");
         }
     }
 }

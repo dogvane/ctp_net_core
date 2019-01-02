@@ -5,13 +5,13 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using static HaiFeng.ctp_quote;
+using static HaiFeng.CtpQuote;
 
 namespace HaiFeng
 {
 	public class CTPQuote : Quote
 	{
-		ctp_quote _q = null;
+		CtpQuote _q = null;
 		private readonly List<Delegate> _listDele = new List<Delegate>();
 
         /// <summary>
@@ -20,7 +20,7 @@ namespace HaiFeng
         /// <param name="pAbsoluteFilePath">ctp_quote.dll文件绝对路径</param>
 		public CTPQuote(string pAbsoluteFilePath)
 		{
-			_q = new ctp_quote(pAbsoluteFilePath);
+			_q = new CtpQuote(pAbsoluteFilePath);
 			SetCallBack();
 		}
 
@@ -28,12 +28,12 @@ namespace HaiFeng
 
 		void SetCallBack()
 		{
-			_q.SetOnFrontConnected((DeleOnFrontConnected)AddDele(new DeleOnFrontConnected(CTPOnFrontConnected)));
-			_q.SetOnRspUserLogin((DeleOnRspUserLogin)AddDele(new DeleOnRspUserLogin(CTPOnRspUserLogin)));
-			_q.SetOnFrontDisconnected((DeleOnFrontDisconnected)AddDele(new DeleOnFrontDisconnected(CTPOnFrontDisconnected)));
-			_q.SetOnRspSubMarketData((DeleOnRspSubMarketData)AddDele(new DeleOnRspSubMarketData(CTPOnRspSubMarketData)));
-			_q.SetOnRtnDepthMarketData((DeleOnRtnDepthMarketData)AddDele(new DeleOnRtnDepthMarketData(CTPOnRtnDepthMarketData)));
-			_q.SetOnRspError((DeleOnRspError)AddDele(new DeleOnRspError(CTPOnRspError)));
+			_q.SetOnFrontConnected((DelegateOnFrontConnected)AddDele(new DelegateOnFrontConnected(CTPOnFrontConnected)));
+			_q.SetOnRspUserLogin((DelegateOnRspUserLogin)AddDele(new DelegateOnRspUserLogin(CTPOnRspUserLogin)));
+			_q.SetOnFrontDisconnected((DelegateOnFrontDisconnected)AddDele(new DelegateOnFrontDisconnected(CTPOnFrontDisconnected)));
+			_q.SetOnRspSubMarketData((DelegateOnRspSubMarketData)AddDele(new DelegateOnRspSubMarketData(CTPOnRspSubMarketData)));
+			_q.SetOnRtnDepthMarketData((DelegateOnRtnDepthMarketData)AddDele(new DelegateOnRtnDepthMarketData(CTPOnRtnDepthMarketData)));
+			_q.SetOnRspError((DelegateOnRspError)AddDele(new DelegateOnRspError(CTPOnRspError)));
 		}
 
 		private void CTPOnRtnDepthMarketData(ref CThostFtdcDepthMarketDataField pDepthMarketData)
@@ -193,7 +193,7 @@ namespace HaiFeng
 
 		public override int ReqUserLogin(string pInvestor, string pPassword, string pBroker)
 		{
-			return (int)_q.ReqUserLogin(BrokerID: pBroker, UserID: pInvestor, Password: pPassword);
+			return (int)_q.ReqUserLogin(brokerId: pBroker, userId: pInvestor, password: pPassword);
 		}
 
 		public override void ReqUserLogout()

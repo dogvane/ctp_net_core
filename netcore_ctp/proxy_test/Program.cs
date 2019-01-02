@@ -12,13 +12,8 @@ namespace HaiFeng
 		{
 			// investor, pwd, instrument, price for buy
 			TestTrade tt = null;
-<<<<<<< HEAD
-			string investor = "008105", pwd = "1", inst = "rb1905";
-			double price_for_buy = 3900;
-=======
 			string investor = "008107", pwd = "1", inst = "rb1905";
 			double price_for_buy = 3400;
->>>>>>> c5d551d61923c9eb6747e1af4ccd5a7fed67d4a9
 			if (args.Length == 4)
 			{
 				investor = args[0];

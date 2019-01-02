@@ -8,13 +8,13 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using static HaiFeng.ctp_trade;
+using static HaiFeng.CtpTrade;
 
 namespace HaiFeng
 {
     public class CTPTrade : Trade
     {
-        ctp_trade _t = null;
+        CtpTrade _t = null;
         private int _session = 0;
         private int _front = 0;
         private string _broker = string.Empty;
@@ -35,7 +35,7 @@ namespace HaiFeng
         /// <param name="pAbsoluteFilePath">ctp_trade.dll文件绝对路径</param>
 		public CTPTrade(string pAbsoluteFilePath)
         {
-            _t = new ctp_trade(pAbsoluteFilePath);
+            _t = new CtpTrade(pAbsoluteFilePath);
             this.SetCallBack();
         }
 
@@ -44,23 +44,23 @@ namespace HaiFeng
         //响应注册
         void SetCallBack()
         {
-            _t.SetOnFrontConnected((DeleOnFrontConnected)AddDele(new DeleOnFrontConnected(CTPOnFrontConnected)));
-            _t.SetOnRspUserLogin((DeleOnRspUserLogin)AddDele(new DeleOnRspUserLogin(CTPOnRspUserLogin)));
-            _t.SetOnRspSettlementInfoConfirm((DeleOnRspSettlementInfoConfirm)AddDele(new DeleOnRspSettlementInfoConfirm(CTPOnRspSettlementInfoConfirm)));
-            _t.SetOnFrontDisconnected((DeleOnFrontDisconnected)AddDele(new DeleOnFrontDisconnected(CTPOnFrontDisconnected)));
-            _t.SetOnRspQryInstrument((DeleOnRspQryInstrument)AddDele(new DeleOnRspQryInstrument(CTPOnRspQryInstrument)));
-            _t.SetOnRspQryInvestorPosition((DeleOnRspQryInvestorPosition)AddDele(new DeleOnRspQryInvestorPosition(CTPOnRspQryInvestorPosition)));
-            _t.SetOnRspQryTradingAccount((DeleOnRspQryTradingAccount)AddDele(new DeleOnRspQryTradingAccount(CTPOnRspQryTradingAccount)));
-            _t.SetOnRspOrderInsert((DeleOnRspOrderInsert)AddDele(new DeleOnRspOrderInsert(CTPOnRspOrderInsert)));
-            _t.SetOnErrRtnOrderInsert((DeleOnErrRtnOrderInsert)AddDele(new DeleOnErrRtnOrderInsert(CTPOnErrRtnOrderInsert)));
-            _t.SetOnErrRtnOrderAction((DeleOnErrRtnOrderAction)AddDele(new DeleOnErrRtnOrderAction(CTPOnErrRtnOrderAction)));
-            _t.SetOnRspOrderAction((DeleOnRspOrderAction)AddDele(new DeleOnRspOrderAction(CTPOnRspOrderAction)));
-            _t.SetOnRtnOrder((DeleOnRtnOrder)AddDele(new DeleOnRtnOrder(CTPOnRtnOrder)));
-            _t.SetOnRtnTrade((DeleOnRtnTrade)AddDele(new DeleOnRtnTrade(CTPOnRtnTrade)));
-            _t.SetOnRtnInstrumentStatus((DeleOnRtnInstrumentStatus)AddDele(new DeleOnRtnInstrumentStatus(CTPOnRtnInstrumentStatus)));
-            _t.SetOnRtnTradingNotice((DeleOnRtnTradingNotice)AddDele(new DeleOnRtnTradingNotice(CTPOnRtnTradingNotice)));
-            _t.SetOnRspUserPasswordUpdate((DeleOnRspUserPasswordUpdate)AddDele(new DeleOnRspUserPasswordUpdate(CTPOnRspUserPasswordUpdate)));
-            _t.SetOnRspError((DeleOnRspError)AddDele(new DeleOnRspError(CTPOnRspError)));
+            _t.SetOnFrontConnected((DelegateOnFrontConnected)AddDele(new DelegateOnFrontConnected(CTPOnFrontConnected)));
+            _t.SetOnRspUserLogin((DelegateOnRspUserLogin)AddDele(new DelegateOnRspUserLogin(CTPOnRspUserLogin)));
+            _t.SetOnRspSettlementInfoConfirm((DelegateOnRspSettlementInfoConfirm)AddDele(new DelegateOnRspSettlementInfoConfirm(CTPOnRspSettlementInfoConfirm)));
+            _t.SetOnFrontDisconnected((DelegateOnFrontDisconnected)AddDele(new DelegateOnFrontDisconnected(CTPOnFrontDisconnected)));
+            _t.SetOnRspQryInstrument((DelegateOnRspQryInstrument)AddDele(new DelegateOnRspQryInstrument(CTPOnRspQryInstrument)));
+            _t.SetOnRspQryInvestorPosition((DelegateOnRspQryInvestorPosition)AddDele(new DelegateOnRspQryInvestorPosition(CTPOnRspQryInvestorPosition)));
+            _t.SetOnRspQryTradingAccount((DelegateOnRspQryTradingAccount)AddDele(new DelegateOnRspQryTradingAccount(CTPOnRspQryTradingAccount)));
+            _t.SetOnRspOrderInsert((DelegateOnRspOrderInsert)AddDele(new DelegateOnRspOrderInsert(CTPOnRspOrderInsert)));
+            _t.SetOnErrRtnOrderInsert((DelegateOnErrRtnOrderInsert)AddDele(new DelegateOnErrRtnOrderInsert(CTPOnErrRtnOrderInsert)));
+            _t.SetOnErrRtnOrderAction((DelegateOnErrRtnOrderAction)AddDele(new DelegateOnErrRtnOrderAction(CTPOnErrRtnOrderAction)));
+            _t.SetOnRspOrderAction((DelegateOnRspOrderAction)AddDele(new DelegateOnRspOrderAction(CTPOnRspOrderAction)));
+            _t.SetOnRtnOrder((DelegateOnRtnOrder)AddDele(new DelegateOnRtnOrder(CTPOnRtnOrder)));
+            _t.SetOnRtnTrade((DelegateOnRtnTrade)AddDele(new DelegateOnRtnTrade(CTPOnRtnTrade)));
+            _t.SetOnRtnInstrumentStatus((DelegateOnRtnInstrumentStatus)AddDele(new DelegateOnRtnInstrumentStatus(CTPOnRtnInstrumentStatus)));
+            _t.SetOnRtnTradingNotice((DelegateOnRtnTradingNotice)AddDele(new DelegateOnRtnTradingNotice(CTPOnRtnTradingNotice)));
+            _t.SetOnRspUserPasswordUpdate((DelegateOnRspUserPasswordUpdate)AddDele(new DelegateOnRspUserPasswordUpdate(CTPOnRspUserPasswordUpdate)));
+            _t.SetOnRspError((DelegateOnRspError)AddDele(new DelegateOnRspError(CTPOnRspError)));
         }
 
         private void CTPOnFrontConnected()
@@ -685,7 +685,7 @@ namespace HaiFeng
 
         public override int ReqUserLogin(string pInvestor, string pPassword, string pBroker)
         {
-            return (int)_t.ReqUserLogin(BrokerID: pBroker, UserID: pInvestor, Password: pPassword, UserProductInfo: "@HaiFeng");
+            return (int)_t.ReqUserLogin(brokerId: pBroker, userId: pInvestor, password: pPassword, userProductInfo: "@HaiFeng");
         }
 
         public override void ReqUserLogout()
@@ -712,11 +712,11 @@ namespace HaiFeng
                 return -1;
             }
 
-            return (int)_t.ReqOrderAction(_broker, _investor, InstrumentID: of.InstrumentID,
-                OrderRef: pOrderId.Split('|')[2],
-                FrontID: int.Parse(pOrderId.Split('|')[1]),
-                SessionID: int.Parse(pOrderId.Split('|')[0]),
-                ActionFlag: TThostFtdcActionFlagType.THOST_FTDC_AF_Delete);
+            return (int)_t.ReqOrderAction(_broker, _investor, instrumentId: of.InstrumentID,
+                orderRef: pOrderId.Split('|')[2],
+                frontId: int.Parse(pOrderId.Split('|')[1]),
+                sessionId: int.Parse(pOrderId.Split('|')[0]),
+                actionFlag: TThostFtdcActionFlagType.THOST_FTDC_AF_Delete);
         }
 
         public override int ReqOrderInsert(string pInstrument, DirectionType pDirection, OffsetType pOffset, double pPrice, int pVolume, int pCustom, OrderType pType = OrderType.Limit, HedgeType pHedge = HedgeType.Speculation)
@@ -744,21 +744,21 @@ namespace HaiFeng
                 VolumeCondition = TThostFtdcVolumeConditionType.THOST_FTDC_VC_CV; //全部数量
             }
 
-            return (int)_t.ReqOrderInsert(_broker, _investor, InstrumentID: pInstrument,
-                OrderRef: string.Format("{0:000000}{1:000000}", _ref++, pCustom % 1000000),
-                CombHedgeFlag: new string((char)(pHedge == HedgeType.Speculation ? TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation : pHedge == HedgeType.Arbitrage ? TThostFtdcHedgeFlagType.THOST_FTDC_HF_Arbitrage : TThostFtdcHedgeFlagType.THOST_FTDC_HF_Hedge), 1),
-                CombOffsetFlag: new String((char)(pOffset == OffsetType.Open ? TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open : pOffset == OffsetType.Close ? TThostFtdcOffsetFlagType.THOST_FTDC_OF_Close : TThostFtdcOffsetFlagType.THOST_FTDC_OF_CloseToday), 1),
-                Direction: pDirection == DirectionType.Buy ? TThostFtdcDirectionType.THOST_FTDC_D_Buy : TThostFtdcDirectionType.THOST_FTDC_D_Sell,
-                VolumeTotalOriginal: pVolume,
-                ForceCloseReason: TThostFtdcForceCloseReasonType.THOST_FTDC_FCC_NotForceClose,
-                ContingentCondition: TThostFtdcContingentConditionType.THOST_FTDC_CC_Immediately,
-                VolumeCondition: VolumeCondition,
-                LimitPrice: pPrice,
-                IsSwapOrder: 0,
-                MinVolume: 1,
-                UserForceClose: 0,
-                TimeCondition: TimeCondition,
-                OrderPriceType: OrderPriceType);
+            return (int)_t.ReqOrderInsert(_broker, _investor, instrumentId: pInstrument,
+                orderRef: string.Format("{0:000000}{1:000000}", _ref++, pCustom % 1000000),
+                combHedgeFlag: new string((char)(pHedge == HedgeType.Speculation ? TThostFtdcHedgeFlagType.THOST_FTDC_HF_Speculation : pHedge == HedgeType.Arbitrage ? TThostFtdcHedgeFlagType.THOST_FTDC_HF_Arbitrage : TThostFtdcHedgeFlagType.THOST_FTDC_HF_Hedge), 1),
+                combOffsetFlag: new String((char)(pOffset == OffsetType.Open ? TThostFtdcOffsetFlagType.THOST_FTDC_OF_Open : pOffset == OffsetType.Close ? TThostFtdcOffsetFlagType.THOST_FTDC_OF_Close : TThostFtdcOffsetFlagType.THOST_FTDC_OF_CloseToday), 1),
+                direction: pDirection == DirectionType.Buy ? TThostFtdcDirectionType.THOST_FTDC_D_Buy : TThostFtdcDirectionType.THOST_FTDC_D_Sell,
+                volumeTotalOriginal: pVolume,
+                forceCloseReason: TThostFtdcForceCloseReasonType.THOST_FTDC_FCC_NotForceClose,
+                contingentCondition: TThostFtdcContingentConditionType.THOST_FTDC_CC_Immediately,
+                volumeCondition: VolumeCondition,
+                limitPrice: pPrice,
+                isSwapOrder: 0,
+                minVolume: 1,
+                userForceClose: 0,
+                timeCondition: TimeCondition,
+                orderPriceType: OrderPriceType);
         }
 
         public override int ReqUserPasswordUpdate(string pOldPassword, string pNewPassword)

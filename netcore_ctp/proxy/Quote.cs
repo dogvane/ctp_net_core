@@ -11,10 +11,13 @@ namespace HaiFeng
 	{
 		private ConcurrentDictionary<string, MarketData> _ticks = new ConcurrentDictionary<string, MarketData>();
 
-		/// <summary>
-		/// Tick数据
-		/// </summary>
-		public ConcurrentDictionary<string, MarketData> DicTick { get { return _ticks; } }
+        /// <summary>
+        /// Tick数据
+        /// </summary>
+        /// <remarks>
+        /// 不同合约只保留最新的一条数据
+        /// </remarks>
+        public ConcurrentDictionary<string, MarketData> DicTick { get { return _ticks; } }
 
 		#region 响应
 		/// <summary>
