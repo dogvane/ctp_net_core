@@ -13,8 +13,8 @@
 
 ### 用前须知
 * 未来的修改将主要集中在 netcore_ctp 目录下。
-* netcore_ctp 目录下的代码和海风的代码相比，会有很大的不一样，所以如果是升级话，建议使用 cs_ctp 下的文件。
-* 如果海风ctp未来版本升级的话，请阅读[如何让海风CTP的c#版本能跑在 Linux (.net core)](http://www.csharptools.cn/post/25.html) 执行升级海风代码。
+* netcore_ctp 目录下的代码和海风的代码相比，会有很大的不一样，所以如果现有代码升级话，请使用 cs_ctp 目录下的文件。
+* 如果海风ctp未来版本升级的话，请阅读 [如何让海风CTP的c#版本能跑在 Linux (.net core)](http://www.csharptools.cn/post/25.html) 自己升级海风代码。
 
 ## 测试demo执行
 * 在centos7.3 下安装好 .net core
