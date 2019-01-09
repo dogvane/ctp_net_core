@@ -1,6 +1,6 @@
-# 如何自己让海风的c#版本能跑在Linux下
+# 如何让海风CTP的c#版本能跑在 Linux (.net core)
 
-## 版本信息
+### 版本信息
 
 目前.net core版本使用的 6.3.11_20180109, 项目在2018年11月从[海风ctp封装](https://github.com/haifengat/hf_ctp_py_proxy)里fork出来。
 
@@ -18,7 +18,7 @@
 
 我们就看这几行代码好了：
 
-··· c
+``` c
 
 DLL_EXPORT_C_DECL void WINAPI SetOnRspUnSubForQuoteRsp(Quote* spi, void* func) { spi->_RspUnSubForQuoteRsp = func; }
 DLL_EXPORT_C_DECL void WINAPI SetOnRtnDepthMarketData(Quote* spi, void* func) { spi->_RtnDepthMarketData = func; }
@@ -31,7 +31,7 @@ DLL_EXPORT_C_DECL void* WINAPI Release(CThostFtdcMdApi *api) { api->Release(); r
 DLL_EXPORT_C_DECL void* WINAPI Init(CThostFtdcMdApi *api) { api->Init(); return 0; }
 DLL_EXPORT_C_DECL void* WINAPI Join(CThostFtdcMdApi *api) { api->Join(); return 0; }
 
-···
+```
 
 上面的3个方法用于设置行情的回调函数，中间的2个方法则是创建发送指令和接收数据的c++对象，下面的三个方法则是对行情api的调用。
 
@@ -39,79 +39,79 @@ DLL_EXPORT_C_DECL void* WINAPI Join(CThostFtdcMdApi *api) { api->Join(); return 
 
 ``` csharp
 
-		IntPtr _handle = IntPtr.Zero, _api = IntPtr.Zero, _spi = IntPtr.Zero;
+IntPtr _handle = IntPtr.Zero, _api = IntPtr.Zero, _spi = IntPtr.Zero;
 
-    	public CTP_quote(string pFile)
-		{
-			_api = (Invoke(_handle, "CreateApi", typeof(Create)) as Create)();
-			_spi = (Invoke(_handle, "CreateSpi", typeof(Create)) as Create)();
-			(Invoke(_handle, "RegisterSpi", typeof(DeleRegisterSpi)) as DeleRegisterSpi)(_api, _spi);
-		}
+public CTP_quote(string pFile)
+{
+	_api = (Invoke(_handle, "CreateApi", typeof(Create)) as Create)();
+	_spi = (Invoke(_handle, "CreateSpi", typeof(Create)) as Create)();
+	(Invoke(_handle, "RegisterSpi", typeof(DeleRegisterSpi)) as DeleRegisterSpi)(_api, _spi);
+}
 
-		public IntPtr Release()
-		{
-			(Invoke(_handle, "RegisterSpi", typeof(DeleRegisterSpi)) as DeleRegisterSpi)(_api, IntPtr.Zero);
-			return (Invoke(_handle, "Release", typeof(DeleRelease)) as DeleRelease)(_api);
-		}
+public IntPtr Release()
+{
+	(Invoke(_handle, "RegisterSpi", typeof(DeleRegisterSpi)) as DeleRegisterSpi)(_api, IntPtr.Zero);
+	return (Invoke(_handle, "Release", typeof(DeleRelease)) as DeleRelease)(_api);
+}
 
-		public IntPtr Init()
-		{
-			return (Invoke(_handle, "Init", typeof(DeleInit)) as DeleInit)(_api);
-		}
+public IntPtr Init()
+{
+	return (Invoke(_handle, "Init", typeof(DeleInit)) as DeleInit)(_api);
+}
 
-		public IntPtr Join()
-		{
-			return (Invoke(_handle, "Join", typeof(DeleJoin)) as DeleJoin)(_api);
-		}
+public IntPtr Join()
+{
+	return (Invoke(_handle, "Join", typeof(DeleJoin)) as DeleJoin)(_api);
+}
 
-        public delegate void DeleOnRspUnSubForQuoteRsp(ref CThostFtdcSpecificInstrumentField pSpecificInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool IsLast);
-        public void SetOnRspUnSubForQuoteRsp(DeleOnRspUnSubForQuoteRsp func) { (Invoke(_handle, "SetOnRspUnSubForQuoteRsp", typeof(DeleSet)) as DeleSet)(_spi, func); }
+public delegate void DeleOnRspUnSubForQuoteRsp(ref CThostFtdcSpecificInstrumentField pSpecificInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool IsLast);
+public void SetOnRspUnSubForQuoteRsp(DeleOnRspUnSubForQuoteRsp func) { (Invoke(_handle, "SetOnRspUnSubForQuoteRsp", typeof(DeleSet)) as DeleSet)(_spi, func); }
 
-		public delegate void DeleOnRtnDepthMarketData(ref CThostFtdcDepthMarketDataField pDepthMarketData);
-        public void SetOnRtnDepthMarketData(DeleOnRtnDepthMarketData func) { (Invoke(_handle, "SetOnRtnDepthMarketData", typeof(DeleSet)) as DeleSet)(_spi, func); }
+public delegate void DeleOnRtnDepthMarketData(ref CThostFtdcDepthMarketDataField pDepthMarketData);
+public void SetOnRtnDepthMarketData(DeleOnRtnDepthMarketData func) { (Invoke(_handle, "SetOnRtnDepthMarketData", typeof(DeleSet)) as DeleSet)(_spi, func); }
 
-		public delegate void DeleOnRtnForQuoteRsp(ref CThostFtdcForQuoteRspField pForQuoteRsp);
-		public void SetOnRtnForQuoteRsp(DeleOnRtnForQuoteRsp func) { (Invoke(_handle, "SetOnRtnForQuoteRsp", typeof(DeleSet)) as DeleSet)(_spi, func); }
+public delegate void DeleOnRtnForQuoteRsp(ref CThostFtdcForQuoteRspField pForQuoteRsp);
+public void SetOnRtnForQuoteRsp(DeleOnRtnForQuoteRsp func) { (Invoke(_handle, "SetOnRtnForQuoteRsp", typeof(DeleSet)) as DeleSet)(_spi, func); }
 
 ```
 
 ## .net core 的迁移
 
-在 github 上是有一个 .net core [CtpNetCore][https://github.com/slobber/CtpNetCore] 的ctp版本，也是基于海风的版本做的修改，但修改的时间比较早，使用的不是最新的上期所sdk，所以只拿来做参考。
+在 github 上是有一个 .net core 的ctp版本：[CtpNetCore](https://github.com/slobber/CtpNetCore)，也是基于海风的版本做的修改，但修改的时间比较早，使用的不是最新的上期所sdk，所以我拿来做参考。
 
-借鉴它的代码，将[AssemblyLoader.cs][https://github.com/slobber/CtpNetCore/blob/master/CtpNetCore/AssemblyLoader.cs]合并到海风的代码里，就能在windows下正常的运行了。
+借鉴它的代码，将[AssemblyLoader.cs](https://github.com/slobber/CtpNetCore/blob/master/CtpNetCore/AssemblyLoader.cs)合并到海风的代码里，就能在windows下正常的运行了。
 
-恩，你没看错，是windows下运行，在linux下无法运行。
+恩，你没看错，是windows下运行，在linux还下无法正常运行。
 
 经过测试，出现以下情况：
 
-. 程序可以编译
-. 能运行，调用 connect 函数没出异常
-. 在 connect 后，能收到正确的回调
-. 在回调函数里，调用 login 会失败，直接导致应用程序崩溃
-. .net core 无法捕捉到 login 失败的异常
+* 程序可以编译
+* 能运行，调用 connect 函数没出异常
+* 在 connect 后，能收到正确的回调
+* 在回调函数里，调用 login 会失败，直接导致应用程序崩溃
+* .net core 无法捕捉到 login 失败的异常
 
 基于以上判断，得到以下结论
 
-. .net core 本身没问题(windows能正常运行)
-. [AssemblyLoader.cs][https://github.com/slobber/CtpNetCore/blob/master/CtpNetCore/AssemblyLoader.cs] 在 linux 下调用机制没问题（调用connect成功，并回调没问题）
-. 出问题可能在 c++ 部分，和 .net core 本身无关
-. 最大可能是传参出问题了（因为connect是空函数，没传参）
+* .net core 本身没问题(windows能正常运行)
+* [AssemblyLoader.cs](https://github.com/slobber/CtpNetCore/blob/master/CtpNetCore/AssemblyLoader.cs) 在 linux 下调用机制没问题（调用connect成功，并回调没问题）
+* 出问题可能在 c++ 部分，和 .net core 本身无关
+* 最大可能是传参出问题了（因为connect是空函数能正常跑，但它没传参）
 
-那么，问题出处知道了，原因呢？
+那么，问题出处知道了，真正的原因呢？
 
 ### 用测试代码说话
 
-开始的时候，考虑的是 windows 和 linux 在大小端上的问题导致到，有猜测后，自然得想办法验证的想法了。
+开始的时候，考虑的是 windows 和 linux 在大小端上的问题导致到，有猜测后，自然是百度了，包括翻墙，可能因为用的关键字不对，所以好几天没得到结果，最后只能直接写代码来验证猜测了。
 
-直接在云服务器linux上，创建一个 .c 文件，一个.net core 项目开测。
+直接在云服务器linux上，创建一个 [test.c](https://github.com/dogvane/hf_ctp_py_proxy/blob/master/blog/how%20to%20fix%20hf_ctp_proxy%20.net%20core%20code%20in%20linux/src/test.c) 文件，一个[.net core 项目](https://github.com/dogvane/hf_ctp_py_proxy/tree/master/blog/how%20to%20fix%20hf_ctp_proxy%20.net%20core%20code%20in%20linux/src) 开测。
 
-从简单的int值传参开始，到long, 到double，然后是字符串，最后是结构体。
+从简单的int值传参开始，到long, 到double，然后是字符串，最后到结构体得出结论。
 
 
 ## 结论
 
-<b>传参时，给结构体加ref<b>
+<b>传参时，结构体前加 ref<b>
 
 
 
