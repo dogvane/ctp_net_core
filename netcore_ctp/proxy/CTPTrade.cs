@@ -61,6 +61,26 @@ namespace HaiFeng
             _t.SetOnRtnTradingNotice((DelegateOnRtnTradingNotice)AddDele(new DelegateOnRtnTradingNotice(CTPOnRtnTradingNotice)));
             _t.SetOnRspUserPasswordUpdate((DelegateOnRspUserPasswordUpdate)AddDele(new DelegateOnRspUserPasswordUpdate(CTPOnRspUserPasswordUpdate)));
             _t.SetOnRspError((DelegateOnRspError)AddDele(new DelegateOnRspError(CTPOnRspError)));
+
+            _t.SetOnRspQryProduct((DelegateOnRspQryProduct) AddDele(new DelegateOnRspQryProduct(CTPOnRspQryProduct)));
+        }
+
+        /// <summary>
+        /// 当查询期货产品信息时返回的数据
+        /// </summary>
+        public event Action<CThostFtdcProductField, CThostFtdcRspInfoField> OnQueryProduct;
+
+        /// <summary>
+        /// 触发查询产品的回调
+        /// </summary>
+        /// <param name="pProduct"></param>
+        /// <param name="pRspInfo"></param>
+        /// <param name="nRequestId"></param>
+        /// <param name="bIsLast"></param>
+        private void CTPOnRspQryProduct(ref CThostFtdcProductField pProduct, ref CThostFtdcRspInfoField pRspInfo,
+            int nRequestId, bool bIsLast)
+        {
+            OnQueryProduct?.Invoke(pProduct, pRspInfo);
         }
 
         private void CTPOnFrontConnected()
@@ -128,8 +148,15 @@ namespace HaiFeng
             }
         }
 
+        /// <summary>
+        /// 返回合约信息
+        /// </summary>
+        /// <param name="pInstrument"></param>
+        /// <param name="pRspInfo"></param>
+        /// <param name="nRequestID"></param>
+        /// <param name="bIsLast"></param>
         private void CTPOnRspQryInstrument(ref CThostFtdcInstrumentField pInstrument, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
-        {
+        {            
             var field = new InstrumentField
             {
                 //ExchangeID = pInstrument.ExchangeID,
@@ -764,6 +791,18 @@ namespace HaiFeng
         public override int ReqUserPasswordUpdate(string pOldPassword, string pNewPassword)
         {
             return (int)_t.ReqUserPasswordUpdate(_broker, _investor, pOldPassword, pNewPassword);
+        }
+
+        /// <summary>
+        /// 查询品种信息
+        /// </summary>
+        /// <param name="productId">
+        /// rb, i, TA, au
+        /// </param>
+        /// <returns></returns>
+        public int ReqQueryProduct(string productId)
+        {
+            return (int)_t.ReqQryProduct(productId);
         }
     }
 }

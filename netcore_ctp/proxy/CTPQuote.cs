@@ -99,6 +99,7 @@ namespace HaiFeng
 				f.UpdateMillisec = tick.UpdateMillisec + 10;
 			}
 
+		    // tick.TradingDay = f.TradingDay;
 			tick.AskPrice = f.AskPrice1;
 			tick.AskVolume = f.AskVolume1;
 			tick.AveragePrice = f.AveragePrice;
@@ -134,12 +135,12 @@ namespace HaiFeng
 			SetCallBack();
 		}
 
-		private void CTPOnRspError(ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
+		private void CTPOnRspError(ref CThostFtdcRspInfoField pRspInfo, int requestId, bool bIsLast)
 		{
 			_OnRtnError?.Invoke(this, new ErrorEventArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.ErrorMsg });
 		}
 
-		private void CTPOnRspUserLogin(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
+		private void CTPOnRspUserLogin(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int requestId, bool bIsLast)
 		{
 			//避免登录错误后不断重连
 			if (pRspInfo.ErrorID != 0)
