@@ -21,6 +21,10 @@ namespace quote_save
 
         static void Main(string[] args)
         {
+
+            new QCloudTest().TestUpload();
+            return;
+
             QuoteSave qs = null;
 
             var t = new CTPTrade("ctp_trade");

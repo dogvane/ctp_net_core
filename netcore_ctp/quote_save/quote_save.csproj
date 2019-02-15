@@ -7,12 +7,20 @@
 
   <ItemGroup>
     <PackageReference Include="CsvHelper" Version="9.2.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="NLog" Version="4.5.11" />
     <PackageReference Include="ServiceStack.Text.Core" Version="5.4.0" />
+    <PackageReference Include="Tencent.QCloud.Cos.Sdk.NetCore.V5.4" Version="5.4.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\proxy\Proxy.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="appsettings.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
