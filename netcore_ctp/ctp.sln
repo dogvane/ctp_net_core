@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Proxy", "proxy\Proxy.csproj
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "proxy_test", "proxy_test\proxy_test.csproj", "{D2617EAB-44CA-4DC2-8686-DFA20FDC6DC7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "quote_save", "quote_save\quote_save.csproj", "{0523DB89-4A7F-4466-AFA4-E2E6F74A54BA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "quote_save", "quote_save\quote_save.csproj", "{0523DB89-4A7F-4466-AFA4-E2E6F74A54BA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "quote_save_cloud", "quote_save_cloud\quote_save_cloud.csproj", "{29FB1C54-E09F-493A-9E5E-DE36A60E6D2D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,14 @@ Global
 		{0523DB89-4A7F-4466-AFA4-E2E6F74A54BA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{0523DB89-4A7F-4466-AFA4-E2E6F74A54BA}.Release|x64.ActiveCfg = Release|Any CPU
 		{0523DB89-4A7F-4466-AFA4-E2E6F74A54BA}.Release|x64.Build.0 = Release|Any CPU
+		{29FB1C54-E09F-493A-9E5E-DE36A60E6D2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{29FB1C54-E09F-493A-9E5E-DE36A60E6D2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{29FB1C54-E09F-493A-9E5E-DE36A60E6D2D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{29FB1C54-E09F-493A-9E5E-DE36A60E6D2D}.Debug|x64.Build.0 = Debug|Any CPU
+		{29FB1C54-E09F-493A-9E5E-DE36A60E6D2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{29FB1C54-E09F-493A-9E5E-DE36A60E6D2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{29FB1C54-E09F-493A-9E5E-DE36A60E6D2D}.Release|x64.ActiveCfg = Release|Any CPU
+		{29FB1C54-E09F-493A-9E5E-DE36A60E6D2D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

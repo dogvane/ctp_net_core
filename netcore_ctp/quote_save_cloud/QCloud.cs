@@ -8,7 +8,7 @@ using Microsoft.Extensions.Configuration;
 using System;
 using System.IO;
 
-namespace quote_save
+namespace quote_save_cloud
 {
     public class QCloud
     {

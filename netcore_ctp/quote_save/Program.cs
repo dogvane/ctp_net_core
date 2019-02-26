@@ -22,13 +22,14 @@ namespace quote_save
         static void Main(string[] args)
         {
 
-            new QCloudTest().TestUpload();
-            return;
+            //new QCloudTest().TestUpload();
+            //return;
 
             QuoteSave qs = null;
 
             var t = new CTPTrade("ctp_trade");
 
+            // 登录交易账号，获得当前所有正在交易的期货代码
             t.OnFrontConnected += (sender, e) =>
             {
                 t.ReqUserLogin(investor, pwd, "9999");

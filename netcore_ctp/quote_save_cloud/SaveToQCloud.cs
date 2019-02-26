@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace quote_save
+namespace quote_save_cloud
 {
     /// <summary>
     /// 将数据保存到腾讯云
