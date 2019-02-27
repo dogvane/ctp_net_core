@@ -212,12 +212,16 @@ namespace HaiFeng
                             struct_init += '\n\t\t\t};'
                             # 构造struct的语句
                             struct_init_dict[fcName] = struct_init
-                            values += '{0}'.format('struc')
+                            values += 'ref {0}'.format('struc')
                         else:
                             values += ', {0}'.format(self.fixParamString(args))
                             if args != 'nRequestID':  # 调用参数中不包含
                                 params += ', {0} {1}'.format(type, self.fixParamString(args))
-                        types += ', {0} {1}'.format(type, self.fixParamString(args))
+
+                        if type in struct_dict.keys():
+                            types += ', ref {0} {1}'.format(type, self.fixParamString(args))
+                        else:
+                            types += ', {0} {1}'.format(type, self.fixParamString(args))
 
                 # 声明主调函数类型 public delegate IntPtr SubscribePublicTopic (IntPtr ptr, IntPtr nResumeType);
                 line = '''\t\tpublic delegate IntPtr Delegate{0}(IntPtr api{1});\n'''.format(fcName, types)
@@ -265,7 +269,7 @@ namespace HaiFeng
             param_trans = ''
 
             for t in cbArgsTypeList:
-                paramtype += ', {0} {1}'.format(('ref {0}'.format(t) if 'CThostFtdc' in t else t), self.fixParamString(cbArgsValueList[cbArgsTypeList.index(t)]))
+                paramtype += ', {0} {1}'.format(('ref {0}'.format(t) if 'CThost' in t else t), self.fixParamString(cbArgsValueList[cbArgsTypeList.index(t)]))
                 # 在响应参数中加入参数的类型,方便之后的调用(可查类型)
                 param = cbArgsValueList[cbArgsTypeList.index(t)]
                 params__ += ', ' + self.fixParamString(param)
