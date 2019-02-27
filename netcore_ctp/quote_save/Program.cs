@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -58,13 +59,24 @@ namespace quote_save
 
             t.ReqConnect("tcp://180.168.146.187:10000");
 
+            bool isWaitConsole = true;
+            if (args.Length == 1 && args[0] == "linux")
+            {
+                isWaitConsole = false;
+                Logger.Info("not wait console input.");
+            }
+
             while (true)
             {
-                var key = Console.ReadKey();
-                if (key.Key == ConsoleKey.Escape
-                    || key.Key == ConsoleKey.Spacebar
-                    || key.Key == ConsoleKey.Enter)
-                    break;
+                if(isWaitConsole)
+                {
+                    var key = Console.ReadKey();
+                    if (key.Key == ConsoleKey.Escape
+                        || key.Key == ConsoleKey.Spacebar
+                        || key.Key == ConsoleKey.Enter)
+                        break;
+                }
+
                 Thread.Sleep(500);
             }
 
