@@ -10,11 +10,18 @@
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="2.2.0" />
     <PackageReference Include="NLog" Version="4.5.11" />
     <PackageReference Include="ServiceStack.Text.Core" Version="5.4.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.5.1" />
     <PackageReference Include="Tencent.QCloud.Cos.Sdk.NetCore.V5.4" Version="5.4.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\proxy\Proxy.csproj" />
+    <ProjectReference Include="..\proxy\proxy.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Text.Encoding.CodePages">
+      <HintPath>System.Text.Encoding.CodePages.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

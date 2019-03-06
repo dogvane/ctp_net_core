@@ -22,13 +22,51 @@ namespace quote_save
 
         static void Main(string[] args)
         {
+            //var msg = "CTP:登录成功。您的密码为弱密码，密码长度不可少于6位";
+            //Console.WriteLine(Encoding.Default.BodyName);
+            //var gb = CodePagesEncodingProvider.Instance.GetEncoding("GB2312");
 
-            //new QCloudTest().TestUpload();
+            //var bytes = Encoding.Default.GetBytes(msg);
+
+            //Console.WriteLine(msg.Length);
+            //Console.WriteLine(bytes.Length);
+
+            //Console.WriteLine(gb.GetBytes(msg).Length);
+
             //return;
+
+            // Encoding.RegisterProvider(CodePagesEncodingProvider.Instance.GetEncoding("GB2312"));
+            //var codePage  = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ANSICodePage;
+            //Console.WriteLine(codePage);
+            //// CTP:登录成功。您的密码为弱密码，密码长度不可少于6位
+            //var codeGB2312 = CodePagesEncodingProvider.Instance.GetEncoding("GB2312");
+            //Console.WriteLine(codeGB2312.CodePage);
+
+            //var bodyName = Encoding.Default.BodyName;
+            //Console.WriteLine(bodyName);
+
+            Logger.Info("start2.");
 
             QuoteSave qs = null;
 
             var t = new CTPTrade("ctp_trade");
+
+            System.AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
+            {
+                if(sender != null)
+                    Logger.Error("UnhandledException sender= {0}", sender.ToString());
+
+                if (e.ExceptionObject != null)
+                {
+                    var ex = e.ExceptionObject as Exception;
+                    if(ex != null)
+                        Logger.Error("UnhandledException ex ", ex.StackTrace);
+                    else
+                        Logger.Error("UnhandledException errorObj {0}", e.ExceptionObject.ToString());
+                }
+
+                Logger.Info("IsTerminating : {0}", e.IsTerminating);
+            };
 
             // 登录交易账号，获得当前所有正在交易的期货代码
             t.OnFrontConnected += (sender, e) =>
@@ -38,6 +76,8 @@ namespace quote_save
                 {
                     if (e2.Value == 0)
                     {
+                        Logger.Info("Login success");                        
+
                         List<string> codes = new List<string>();
 
                         foreach (var instrument in t.DicInstrumentField.Values)
@@ -68,7 +108,7 @@ namespace quote_save
 
             while (true)
             {
-                if(isWaitConsole)
+                if (isWaitConsole)
                 {
                     var key = Console.ReadKey();
                     if (key.Key == ConsoleKey.Escape
@@ -76,15 +116,20 @@ namespace quote_save
                         || key.Key == ConsoleKey.Enter)
                         break;
                 }
-
+                Logger.Info("wait");
                 Thread.Sleep(500);
             }
 
             qs?.Release();
             t?.ReqUserLogout();
         }
+
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            
+        }
     }
-    
+
     public class QuoteSave
     {
         CTPQuote _q = null;
