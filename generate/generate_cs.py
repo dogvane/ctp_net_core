@@ -55,7 +55,7 @@ class Generate:
     def fixParamString(self, paramString):
         retstr = paramString[0].lower() + paramString[1:]
         retstr = retstr.replace('ID', 'Id')
-        print(paramString, retstr)
+        # print(paramString, retstr)
         return retstr
 
     def processFunction(self, line):
@@ -234,7 +234,8 @@ namespace HaiFeng
                 if fcName in struct_init_dict.keys():
                     func = '''
 		public IntPtr {0}({1})
-		{{{3}
+		{{
+            {3}
 			return ((Delegate{0})loader.Invoke("{0}", typeof(Delegate{0})))(_api, {2});
 		}}\n'''.format(fcName, params.replace(', nRequestId', ''), values.replace(', nRequestId', ', nRequestId++'), struct_init_dict[fcName])
                 else:

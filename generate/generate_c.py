@@ -99,6 +99,7 @@ class Generate:
 #endif
 
 #include <string.h>
+#include <stdio.h>
 
 class {2}: {3}
 {{
@@ -111,7 +112,7 @@ public:
 	{{
 		if (pRspInfo == NULL)
 		{{
-			memset(&rif, 0, sizeof(rif));
+			memset(&rif, 0, sizeof(CThostFtdcRspInfoField));
 			return &rif;
 		}}
 		else
@@ -142,6 +143,8 @@ public:
                 on_line = """
 	virtual void onRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 	{
+        // printf("\\nctp   onRspError   \\n");
+
 		if (_RspError)
 		{
 			((RspError)_RspError)(repare(pRspInfo), nRequestID, bIsLast);
@@ -149,29 +152,59 @@ public:
 	}\n"""
             elif 'OnRsp' in cbName:
                 cnt = """
+        // printf("\\nctp   {3}   \\n");
 		if (_{0})
 		{{
 			if ({2})
 				(({0})_{0})({2}, repare(pRspInfo), nRequestID, bIsLast);
 			else
 			{{
-				{1} f; memset(&f, 0, sizeof(f));
+				{1} f; memset(&f, 0, sizeof({1}));
 				(({0})_{0})(&f, repare(pRspInfo), nRequestID, bIsLast);
 			}}
-		}}""".format(cb, cbArgsTypeList[0], cbArgsValueList[0])
+		}}""".format(cb, cbArgsTypeList[0], cbArgsValueList[0], cbName)
 
                 on_line = '\tvirtual void {0} ({1})\n\t{{{2}\n\t}}\n'.format(cbName, cbArgs, cnt)
             elif 'OnRtn' in cbName:
-                cnt = """if (_{0}) (({0})_{0})({1});""".format(cb, cbArgsValueList[0])
+                cnt = """
+                // printf("\\nctp   {3}   \\n");
+                if (_{0}) 
+                {{
+                    if ({1})
+                    {{
+                         (({0})_{0})({1});
+                    }}
+                    else
+                    {{
+                        {2} f; memset(&f, 0, sizeof({2}));
+                        (({0})_{0})(&f);
+                    }}
+                }}
+                """.format(cb, cbArgsValueList[0],  cbArgsTypeList[0], cbName)
+
                 on_line = '\tvirtual void {0} ({1})\n\t{{\n\t\t{2}\n\t}}\n'.format(cbName, cbArgs, cnt)
             elif 'OnErrRtn' in cbName:
                 params = ''
                 for args in cbArgsValueList:
                     params += args if params == '' else (', ' + args)
-                cnt = """if (_{0}) (({0})_{0})({1});""".format(cb, params)
+                cnt = """
+                // printf("\\nctp   {3}   \\n");
+                if (_{0})
+                {{
+                    if ({2})
+                        (({0})_{0})({2}, repare(pRspInfo));
+                    else
+                    {{
+                        {1} f; memset(&f, 0, sizeof({1}));
+                        (({0})_{0})(&f, repare(pRspInfo));
+                    }}
+                }}""".format(cb, cbArgsTypeList[0], cbArgsValueList[0], cbName)
                 on_line = '\tvirtual void {0} ({1})\n\t{{\n\t\t{2}\n\t}}\n'.format(cbName, cbArgs, cnt)
             else:
-                cnt = """if (_{0}) (({0})_{0})({1});""".format(cb, '' if len(cbArgsValueList) == 0 else cbArgsValueList[0])
+                cnt = """
+                // printf("\\nctp   {2}   \\n");
+                if (_{0}) (({0})_{0})({1});
+                """.format(cb, '' if len(cbArgsValueList) == 0 else cbArgsValueList[0], cbName)
                 on_line = '\tvirtual void {0} ({1}) {{{2}}}\n'.format(cbName, cbArgs, cnt)
 
             if on_line != '':
@@ -245,7 +278,13 @@ DLL_EXPORT_C_DECL void* WINAPI CreateSpi(){{return new {0}();}}
             # if line.find(' int ') >= 0:
             #     self.Voids += 'void* WINAPI {0}({1} *api {2}){{return (void *)api->{0}({3});}}\n'.format(fcName, self.ApiName, '' if fcArgs == '' else ',' + fcArgs, params)
             # else:
-            self.f_cpp.write('DLL_EXPORT_C_DECL void* WINAPI {0}({1} *api {2}){{api->{0}({3}); return 0;}}\n'.format(fcName, self.ApiName, '' if fcArgs == '' else ',' + fcArgs, params))
+            self.f_cpp.write("""
+            DLL_EXPORT_C_DECL void* WINAPI {0}({1} *api {2}){{
+                
+                // printf("\\ndo {0} \\n");
+                    
+                api->{0}({3}); return 0;}}
+                """.format(fcName, self.ApiName, '' if fcArgs == '' else ',' + fcArgs, params))
 
     def run(self):
         for line in self.fcpp.readlines():
