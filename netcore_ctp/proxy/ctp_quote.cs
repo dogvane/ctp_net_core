@@ -78,6 +78,7 @@ namespace HaiFeng
 
 		public IntPtr RegisterFensUserInfo(string brokerId = "", string userId = "", TThostFtdcLoginModeType loginMode = TThostFtdcLoginModeType.THOST_FTDC_LM_Trade)
 		{
+            
 			CThostFtdcFensUserInfoField struc = new CThostFtdcFensUserInfoField
 			{
 				BrokerID = brokerId,
@@ -109,6 +110,7 @@ namespace HaiFeng
 
 		public IntPtr ReqUserLogin(string tradingDay = "", string brokerId = "", string userId = "", string password = "", string userProductInfo = "", string interfaceProductInfo = "", string protocolInfo = "", string macAddress = "", string oneTimePassword = "", string clientIPAddress = "", string loginRemark = "")
 		{
+            
 			CThostFtdcReqUserLoginField struc = new CThostFtdcReqUserLoginField
 			{
 				TradingDay = tradingDay,
@@ -128,6 +130,7 @@ namespace HaiFeng
 
 		public IntPtr ReqUserLogout(string brokerId = "", string userId = "")
 		{
+            
 			CThostFtdcUserLogoutField struc = new CThostFtdcUserLogoutField
 			{
 				BrokerID = brokerId,

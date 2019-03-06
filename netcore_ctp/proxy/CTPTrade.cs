@@ -95,8 +95,13 @@ namespace HaiFeng
             SetCallBack();
         }
 
-        private void CTPOnRspUserLogin(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
+        private unsafe void CTPOnRspUserLogin(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
         {
+            //Console.WriteLine("on CTPOnRspUserLogin    result");
+
+            //Console.WriteLine("CThostFtdcRspUserLoginField    {0}", Marshal.SizeOf(pRspUserLogin));
+            //Console.WriteLine("CThostFtdcRspInfoField    {0}", Marshal.SizeOf(pRspInfo));
+
             //避免登录错误后不断重连
             if (pRspInfo.ErrorID != 0)
                 _t.SetOnFrontDisconnected(null);
@@ -113,7 +118,17 @@ namespace HaiFeng
                 _broker = pRspUserLogin.BrokerID;
                 _investor = pRspUserLogin.UserID;
 
+                //Console.WriteLine("_session: " + _session);
+                //Console.WriteLine("_front: " + _front);
+                //Console.WriteLine("_broker: " + _broker);
+                //Console.WriteLine("_investor: " + _investor);
+                //Console.WriteLine("_session: " + _session);
+                //Console.WriteLine("TradingDay: " + TradingDay);
+
+                //Console.WriteLine("ErrorMsg" + pRspInfo.ErrorMsg);
+
                 _t.ReqSettlementInfoConfirm(_broker, _investor);
+                // _t.ReqQryInstrument();
             }
             else
             {
@@ -123,11 +138,15 @@ namespace HaiFeng
 
         private void CTPOnRspSettlementInfoConfirm(ref CThostFtdcSettlementInfoConfirmField pSettlementInfoConfirm, ref CThostFtdcRspInfoField pRspInfo, int nRequestID, bool bIsLast)
         {
+            //Console.WriteLine("On CTPOnRspSettlementInfoConfirm");
+
             _t.ReqQryInstrument();
         }
 
         private void CTPOnRtnInstrumentStatus(ref CThostFtdcInstrumentStatusField pInstrumentStatus)
         {
+            //Console.WriteLine("On CTPOnRtnInstrumentStatus");
+
             ExchangeStatusType status = ExchangeStatusType.BeforeTrading;
             switch (pInstrumentStatus.InstrumentStatus)
             {
@@ -583,7 +602,7 @@ namespace HaiFeng
                     DicOrderField[id].InsertTime = it;
                     if (IsLogin)
                     {
-                        _OnRtnErrOrder?.Invoke(this, new ErrOrderArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.ErrorMsg, Value = DicOrderField[id] });
+                        _OnRtnErrOrder?.Invoke(this, new ErrOrderArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.GetErrorMsg(), Value = DicOrderField[id] });
                     }
                 }
             }
@@ -628,7 +647,7 @@ namespace HaiFeng
                 of.Status = OrderStatus.Error;
                 of.StatusMsg = string.Format("[RtnErrorID:{0}]{1}", pRspInfo.ErrorID, pRspInfo.ErrorMsg);
 
-                _OnRtnErrOrder?.Invoke(this, new ErrOrderArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.ErrorMsg, Value = of });
+                _OnRtnErrOrder?.Invoke(this, new ErrOrderArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.GetErrorMsg(), Value = of });
             }
         }
 
@@ -640,7 +659,7 @@ namespace HaiFeng
             OrderField of;
             if (IsLogin && DicOrderField.TryGetValue(id, out of))
             {
-                _OnRtnErrCancel?.Invoke(this, new ErrOrderArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.ErrorMsg, Value = of });
+                _OnRtnErrCancel?.Invoke(this, new ErrOrderArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.GetErrorMsg(), Value = of });
             }
         }
 
@@ -652,7 +671,7 @@ namespace HaiFeng
             OrderField of;
             if (IsLogin && DicOrderField.TryGetValue(id, out of))
             {
-                _OnRtnErrCancel?.Invoke(this, new ErrOrderArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.ErrorMsg, Value = of });
+                _OnRtnErrCancel?.Invoke(this, new ErrOrderArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.GetErrorMsg(), Value = of });
             }
         }
 
@@ -660,7 +679,7 @@ namespace HaiFeng
         {
             if (IsLogin)
             {
-                _OnRtnPasswordUpdate?.Invoke(this, new ErrorEventArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.ErrorMsg });
+                _OnRtnPasswordUpdate?.Invoke(this, new ErrorEventArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.GetErrorMsg() });
             }
         }
 
@@ -670,7 +689,7 @@ namespace HaiFeng
                 _OnRtnError?.Invoke(this, new ErrorEventArgs
                 {
                     ErrorID = pRspInfo.ErrorID,
-                    ErrorMsg = string.Format("OnRspError:[ErrorID:{0}][ErrorMsg:{1}]", pRspInfo.ErrorID, pRspInfo.ErrorMsg),
+                    ErrorMsg = string.Format("OnRspError:[ErrorID:{0}][ErrorMsg:{1}]", pRspInfo.ErrorID, pRspInfo.GetErrorMsg()),
                 });
         }
 
@@ -712,7 +731,8 @@ namespace HaiFeng
 
         public override int ReqUserLogin(string pInvestor, string pPassword, string pBroker)
         {
-            return (int)_t.ReqUserLogin(brokerId: pBroker, userId: pInvestor, password: pPassword, userProductInfo: "@HaiFeng");
+            //return (int)_t.ReqUserLogin(brokerId: pBroker, userId: pInvestor, password: pPassword);
+            return (int)_t.ReqUserLogin(string.Empty, pBroker, pInvestor, pPassword);
         }
 
         public override void ReqUserLogout()

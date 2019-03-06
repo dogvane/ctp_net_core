@@ -124,6 +124,30 @@ namespace PureCode.CtpCSharp
             var method = Marshal.GetDelegateForFunctionPointer(functionHandle, type);
             return method;
         }
-    } 
+    }
+
+    public static class AssemblyExtend
+    {
+        public static unsafe string GetGB2312String(this byte[] array)
+        {
+            int len = 0;
+            for (var i = 0; i < array.Length; i++)
+            {
+                if (array[i] == 0)
+                {
+                    len = i;
+                    break;
+                }
+            }
+
+            fixed (byte* p = array)
+            {
+                var s = encoding.GetString(p, len);
+                return s;
+            }
+        }
+
+        static Encoding encoding = CodePagesEncodingProvider.Instance.GetEncoding("GB2312");
+    }
 
 }

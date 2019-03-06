@@ -1,5 +1,7 @@
 
 using System.Runtime.InteropServices;
+using System.Text;
+using PureCode.CtpCSharp;
 
 
 /// <summary>
@@ -742,11 +744,16 @@ public struct CThostFtdcRspInfoField
  	/// 错误代码
  	/// </summary>
 	public int ErrorID;
- 	/// <summary>
- 	/// 错误信息
- 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValTStr, SizeConst=81)]
-	public string ErrorMsg;
+    /// <summary>
+    /// 错误信息
+    /// </summary>
+    [MarshalAs(UnmanagedType.ByValArray, SizeConst = 81)]
+    public byte[] ErrorMsg;
+
+    public unsafe string GetErrorMsg()
+    {
+        return ErrorMsg.GetGB2312String();
+    }
 }
 
 
@@ -874,12 +881,18 @@ public struct CThostFtdcInstrumentField
  	/// <summary>
  	/// 合约名称
  	/// </summary>
-	[MarshalAs(UnmanagedType.ByValTStr, SizeConst=21)]
-	public string InstrumentName;
- 	/// <summary>
- 	/// 合约在交易所的代码
- 	/// </summary>
-	[MarshalAs(UnmanagedType.ByValTStr, SizeConst=31)]
+	[MarshalAs(UnmanagedType.ByValArray, SizeConst=21)]
+	public byte[] InstrumentName;
+
+    public string GetInstrumentName()
+    {
+        return InstrumentName.GetGB2312String();
+    }
+
+    /// <summary>
+    /// 合约在交易所的代码
+    /// </summary>
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst=31)]
 	public string ExchangeInstID;
  	/// <summary>
  	/// 产品代码

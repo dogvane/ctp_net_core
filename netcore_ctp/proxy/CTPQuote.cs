@@ -136,8 +136,8 @@ namespace HaiFeng
 		}
 
 		private void CTPOnRspError(ref CThostFtdcRspInfoField pRspInfo, int requestId, bool bIsLast)
-		{
-			_OnRtnError?.Invoke(this, new ErrorEventArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.ErrorMsg });
+        {
+			_OnRtnError?.Invoke(this, new ErrorEventArgs { ErrorID = pRspInfo.ErrorID, ErrorMsg = pRspInfo.GetErrorMsg() });
 		}
 
 		private void CTPOnRspUserLogin(ref CThostFtdcRspUserLoginField pRspUserLogin, ref CThostFtdcRspInfoField pRspInfo, int requestId, bool bIsLast)
