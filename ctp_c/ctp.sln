@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctp_quote", "ctp_quote.vcxp
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ctp_trade", "ctp_trade.vcxproj", "{3D843D26-1315-403F-B4B5-5D3C3C135478}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ConsoleApplication1", "..\ConsoleApplication1\ConsoleApplication1.vcxproj", "{202F9BEC-2555-4A17-8EE3-787D3187E33E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -31,6 +33,14 @@ Global
 		{3D843D26-1315-403F-B4B5-5D3C3C135478}.Release|x64.Build.0 = Release|x64
 		{3D843D26-1315-403F-B4B5-5D3C3C135478}.Release|x86.ActiveCfg = Release|Win32
 		{3D843D26-1315-403F-B4B5-5D3C3C135478}.Release|x86.Build.0 = Release|Win32
+		{202F9BEC-2555-4A17-8EE3-787D3187E33E}.Debug|x64.ActiveCfg = Debug|x64
+		{202F9BEC-2555-4A17-8EE3-787D3187E33E}.Debug|x64.Build.0 = Debug|x64
+		{202F9BEC-2555-4A17-8EE3-787D3187E33E}.Debug|x86.ActiveCfg = Debug|Win32
+		{202F9BEC-2555-4A17-8EE3-787D3187E33E}.Debug|x86.Build.0 = Debug|Win32
+		{202F9BEC-2555-4A17-8EE3-787D3187E33E}.Release|x64.ActiveCfg = Release|x64
+		{202F9BEC-2555-4A17-8EE3-787D3187E33E}.Release|x64.Build.0 = Release|x64
+		{202F9BEC-2555-4A17-8EE3-787D3187E33E}.Release|x86.ActiveCfg = Release|Win32
+		{202F9BEC-2555-4A17-8EE3-787D3187E33E}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

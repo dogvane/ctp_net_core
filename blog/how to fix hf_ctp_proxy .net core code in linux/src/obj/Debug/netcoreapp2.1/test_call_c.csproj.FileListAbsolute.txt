@@ -1,0 +1,11 @@
+C:\Users\Dogvane\Desktop\Code\my_hf_ctp\blog\how to fix hf_ctp_proxy .net core code in linux\src\bin\Debug\netcoreapp2.1\test_call_c.deps.json
+C:\Users\Dogvane\Desktop\Code\my_hf_ctp\blog\how to fix hf_ctp_proxy .net core code in linux\src\bin\Debug\netcoreapp2.1\test_call_c.runtimeconfig.json
+C:\Users\Dogvane\Desktop\Code\my_hf_ctp\blog\how to fix hf_ctp_proxy .net core code in linux\src\bin\Debug\netcoreapp2.1\test_call_c.runtimeconfig.dev.json
+C:\Users\Dogvane\Desktop\Code\my_hf_ctp\blog\how to fix hf_ctp_proxy .net core code in linux\src\bin\Debug\netcoreapp2.1\test_call_c.dll
+C:\Users\Dogvane\Desktop\Code\my_hf_ctp\blog\how to fix hf_ctp_proxy .net core code in linux\src\bin\Debug\netcoreapp2.1\test_call_c.pdb
+C:\Users\Dogvane\Desktop\Code\my_hf_ctp\blog\how to fix hf_ctp_proxy .net core code in linux\src\obj\Debug\netcoreapp2.1\test_call_c.csprojAssemblyReference.cache
+C:\Users\Dogvane\Desktop\Code\my_hf_ctp\blog\how to fix hf_ctp_proxy .net core code in linux\src\obj\Debug\netcoreapp2.1\test_call_c.csproj.CoreCompileInputs.cache
+C:\Users\Dogvane\Desktop\Code\my_hf_ctp\blog\how to fix hf_ctp_proxy .net core code in linux\src\obj\Debug\netcoreapp2.1\test_call_c.AssemblyInfoInputs.cache
+C:\Users\Dogvane\Desktop\Code\my_hf_ctp\blog\how to fix hf_ctp_proxy .net core code in linux\src\obj\Debug\netcoreapp2.1\test_call_c.AssemblyInfo.cs
+C:\Users\Dogvane\Desktop\Code\my_hf_ctp\blog\how to fix hf_ctp_proxy .net core code in linux\src\obj\Debug\netcoreapp2.1\test_call_c.dll
+C:\Users\Dogvane\Desktop\Code\my_hf_ctp\blog\how to fix hf_ctp_proxy .net core code in linux\src\obj\Debug\netcoreapp2.1\test_call_c.pdb

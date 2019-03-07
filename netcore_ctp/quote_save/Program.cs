@@ -247,6 +247,7 @@ namespace quote_save
             if (isNew)
             {
                 writer.WriteHeader<MarketData>();
+                writer.NextRecord();
             }
 
             return writer;
