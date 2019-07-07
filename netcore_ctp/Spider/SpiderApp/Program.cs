@@ -7,7 +7,10 @@ namespace SpiderApp
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            var ret = new 期货数据爬虫.持仓.转换.大商所().Parse("20190522");
+            var date = "20190704";
+            new 期货数据爬虫.持仓.下载.大商所().下载(date, true);
+
+            var ret = new 期货数据爬虫.持仓.转换.大商所().Parse(date);
             var json = Newtonsoft.Json.JsonConvert.SerializeObject(ret, Newtonsoft.Json.Formatting.Indented);
             Console.WriteLine(json);
 
