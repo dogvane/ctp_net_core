@@ -38,5 +38,32 @@ namespace 期货数据爬虫.Common
 
             return (int)double.Parse(str);
         }
+
+        /// <summary>
+        /// 将常见的字符串,格式化为csv可识别的样式
+        /// 先把 , 删除,把\t替换为, 多个\t只视为一个
+        /// </summary>
+        /// <param name="str"></param>
+        /// <returns></returns>
+        public static string FixLineToCsv(this string str)
+        {
+            StringBuilder sb = new StringBuilder(str);
+
+            sb.Replace(",", "");
+
+            int length = sb.Length;
+            while (true)
+            {
+                sb.Replace("\t\t", "\t");
+                if (sb.Length == length)
+                    break;
+
+                length = sb.Length;
+            }
+
+            sb.Replace("\t", ",");
+
+            return sb.ToString();
+        }
     }
 }

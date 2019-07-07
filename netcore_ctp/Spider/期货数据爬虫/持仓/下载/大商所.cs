@@ -16,11 +16,11 @@ namespace 期货数据爬虫.持仓.下载
         /// <summary>
         ///     下载某天的数据
         /// </summary>
-        public bool 下载(string date)
+        public bool 下载(string date, bool isReplace = false)
         {
             // var date = DateTime.Now.GetShortDate();
             var saveFile = Path.Combine(Utils.GetDataFileBasePath, $"Interest/DaLian/{date.Substring(0, 4)}/{date}.zip");
-            if (File.Exists(saveFile))
+            if (File.Exists(saveFile) && !isReplace)
                 return true;
 
             var fi = new FileInfo(saveFile);
@@ -32,14 +32,17 @@ namespace 期货数据爬虫.持仓.下载
             try
             {
                 var client = new WebClient();
+                
                 StringBuilder sb = new StringBuilder();
 
-                sb.Append("&batchExportFlag=batch");
+                sb.Append("?batchExportFlag=batch");
                 sb.AppendFormat($"&year={date.Substring(0, 4)}");
-                sb.AppendFormat($"&month={date.Substring(4, 2)}");
+                sb.AppendFormat($"&month={int.Parse(date.Substring(4, 2)) - 1}");
                 sb.AppendFormat($"&day={date.Substring(6, 2)}");
 
-                var bytes = client.UploadData(url, Encoding.Default.GetBytes(sb.ToString()));
+                Console.WriteLine(sb.ToString());
+                
+                var bytes = client.DownloadData(url + sb.ToString());
 
                 File.WriteAllBytes(saveFile, bytes);
                 return true;
